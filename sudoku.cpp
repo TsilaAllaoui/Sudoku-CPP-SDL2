@@ -736,7 +736,7 @@ void Sudoku::insert_nb(int i, int j)
         {
             switch (event.key.keysym.sym)
             {
-            case SDLK_1:
+            case SDLK_KP1:
             {
                 grid_copy[i][j] = 1;
                 if (grid[i][j]==1)
@@ -744,7 +744,7 @@ void Sudoku::insert_nb(int i, int j)
                 fin = true;
                 break;
             }
-            case SDLK_2:
+            case SDLK_KP2:
             {
                 grid_copy[i][j] = 2;
                 if (grid[i][j]==2)
@@ -752,7 +752,7 @@ void Sudoku::insert_nb(int i, int j)
                 fin = true;
                 break;
             }
-            case SDLK_3:
+            case SDLK_KP3:
             {
                 grid_copy[i][j] = 3;
                 if (grid[i][j]==3)
@@ -760,7 +760,7 @@ void Sudoku::insert_nb(int i, int j)
                 fin = true;
                 break;
             }
-            case SDLK_4:
+            case SDLK_KP4:
             {
                 grid_copy[i][j] = 4;
                 if (grid[i][j]==4)
@@ -768,7 +768,7 @@ void Sudoku::insert_nb(int i, int j)
                 fin = true;
                 break;
             }
-            case SDLK_5:
+            case SDLK_KP5:
             {
                 grid_copy[i][j] = 5;
                 if (grid[i][j]==5)
@@ -776,7 +776,7 @@ void Sudoku::insert_nb(int i, int j)
                 fin = true;
                 break;
             }
-            case SDLK_6:
+            case SDLK_KP6:
             {
                 grid_copy[i][j] = 6;
                 if (grid[i][j]==6)
@@ -784,7 +784,7 @@ void Sudoku::insert_nb(int i, int j)
                 fin = true;
                 break;
             }
-            case SDLK_7:
+            case SDLK_KP7:
             {
                 grid_copy[i][j] = 7;
                 if (grid[i][j]==7)
@@ -792,7 +792,7 @@ void Sudoku::insert_nb(int i, int j)
                 fin = true;
                 break;
             }
-            case SDLK_8:
+            case SDLK_KP8:
             {
                 grid_copy[i][j] = 8;
                 if (grid[i][j]==8)
@@ -800,7 +800,7 @@ void Sudoku::insert_nb(int i, int j)
                 fin = true;
                 break;
             }
-            case SDLK_9:
+            case SDLK_KP9:
             {
                 grid_copy[i][j] = 9;
                 if (grid[i][j]==9)

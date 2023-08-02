@@ -21,8 +21,10 @@ Sudoku::Sudoku()
 
     // Seting up attributes
     srand(time(0));
-    cur_pos.x = 2;
-    cur_pos.y = 2;
+    cur_pos.x = 5;
+    cur_pos.y = 5;
+    cur_pos.h = S_SIZE;
+    cur_pos.w = S_SIZE;
     choice_pos.h = 30;
     choice_pos.w = 30;
     cur_choice = START;
@@ -142,6 +144,7 @@ void Sudoku::launch()
     gridCleanup();
     setBoolean();
     showGridCopy();
+    moveCursor();
     SDL_Delay(100000000);
     //while (redo)
     //{
@@ -510,7 +513,7 @@ void Sudoku::showGrid()
 
 void Sudoku::moveCursor()
 {
-    int i = cur_pos.y / 16, j = cur_pos.x / 16;
+    int i = cur_pos.y / S_SIZE, j = cur_pos.x / S_SIZE;
     SDL_RenderCopy(renderer, cursor[0], nullptr, &cur_pos);
     SDL_RenderPresent(renderer);
 
@@ -527,48 +530,48 @@ void Sudoku::moveCursor()
             {
             case SDLK_UP:
             {
-                if (cur_pos.y - 16 > 0)
+                if (cur_pos.y - S_SIZE > 0)
                 {
-                    if (cur_pos.y == 52 || cur_pos.y == 102)
-                        cur_pos.y -= 18;
+                    if (cur_pos.y == 6 * S_SIZE + 15 || cur_pos.y == 3 * S_SIZE + 10)
+                        cur_pos.y -= S_SIZE + 5;
                     else
-                        cur_pos.y -= 16;
+                        cur_pos.y -= S_SIZE;
                     i--;
                 }
                 break;
             }
             case SDLK_DOWN:
             {
-                if (cur_pos.y + 16 <= COTE * 16)
+                if (cur_pos.y + S_SIZE <= 9 * S_SIZE)
                 {
-                    if (cur_pos.y == 34 || cur_pos.y == 84)
-                        cur_pos.y += 18;
+                    if (cur_pos.y == 2 * S_SIZE + 5 || cur_pos.y == 5 * S_SIZE + 10)
+                        cur_pos.y += S_SIZE + 5;
                     else
-                        cur_pos.y += 16;
+                        cur_pos.y += S_SIZE;
                     i++;
                 }
                 break;
             }
             case SDLK_LEFT:
             {
-                if (cur_pos.x - 16 > 0)
+                if (cur_pos.x - S_SIZE > 0)
                 {
-                    if (cur_pos.x == 52 || cur_pos.x == 102)
-                        cur_pos.x -= 18;
+                    if (cur_pos.x == 6 * S_SIZE + 15 || cur_pos.x == 3 * S_SIZE + 10)
+                        cur_pos.x -= S_SIZE + 5;
                     else
-                        cur_pos.x -= 16;
+                        cur_pos.x -= S_SIZE;
                     j--;
                 }
                 break;
             }
             case SDLK_RIGHT:
             {
-                if (cur_pos.x + 16 <= COTE * 16)
+                if (cur_pos.x + S_SIZE <= 9 * S_SIZE)
                 {
-                    if (cur_pos.x == 34 || cur_pos.x == 84)
-                        cur_pos.x += 18;
+                    if (cur_pos.x == 2 * S_SIZE + 5 || cur_pos.x == 5 * S_SIZE + 10)
+                        cur_pos.x += S_SIZE + 5;
                     else
-                        cur_pos.x += 16;
+                        cur_pos.x += S_SIZE;
                     j++;
                 }
                 break;

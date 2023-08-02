@@ -381,7 +381,6 @@ void Sudoku::grid3x3Cleanup(int i_min, int i_max, int j_min, int j_max)
 {
     int counter = 0, nb_max;
     nb_max = 9 - (rand() % 3) + 1;
-    counter = nb_max - 1;
     do
     {
         int x = rand() % (i_max - i_min + 1) + i_min;

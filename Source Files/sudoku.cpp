@@ -42,7 +42,7 @@ Sudoku::Sudoku()
         number[i] = IMG_LoadTexture(renderer, path.c_str());
     }
 
-    fixed_number = new SDL_Texture *[9];
+    fixed_number = new SDL_Texture *[10];
     for (int i = 0; i < 10; i++) {
         std::string path = "./images/" + std::to_string(i) + "_fixe.png";
         fixed_number[i] = IMG_LoadTexture(renderer, path.c_str());
@@ -53,7 +53,7 @@ Sudoku::Sudoku()
         std::string path;
         if (i > 0)
             path = "./images/loading" + std::to_string(i) + ".png";
-        path = "./images/loading.png";
+        else path = "./images/loading.png";
         loading_screen[i] = IMG_LoadTexture(renderer, path.c_str());
     }
 
@@ -74,10 +74,10 @@ Sudoku::~Sudoku()
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_DestroyTexture(start);
-    delete(loading_screen);
-    delete(cursor);
-    delete(number);
-    delete(fixed_number);
+    delete[](loading_screen);
+    delete[](cursor);
+    delete[](number);
+    delete[](fixed_number);
     redo = false;
 }
 
@@ -138,37 +138,29 @@ void Sudoku::startGame()
 
 void Sudoku::launch()
 {
-    startGame();
-    generateGrid();
-    copyGrid();
-    gridCleanup();
-    setBoolean();
-    showGridCopy();
-    moveCursor();
-    SDL_Delay(100000000);
-    //while (redo)
-    //{
-    //    startGame();
-    //    generateGrid();
-    //    copyGrid();
-    //    gridCleanup();
-    //    setBoolean();
-    //    showGridCopy();
-    //    moveCursor();
-    //    SDL_Delay(1000);
-    //    reload();
-    //}
-    //this->~Sudoku();
+    while (redo)
+    {
+        startGame();
+        generateGrid();
+        copyGrid();
+        gridCleanup();
+        setBoolean();
+        showGridCopy();
+        moveCursor();
+        SDL_Delay(1000);
+        reload();
+    }
+    this->~Sudoku();
 }
 
 void Sudoku::generateGrid()
 {
+    bool first = true;
     auto renderLoad = [&](const int& i) {
-        SDL_RenderCopy(renderer, loading_screen[i], nullptr, nullptr);
-        SDL_Delay(30);
+        SDL_RenderCopy(renderer, loading_screen[first ? i : 4], nullptr, nullptr);
         SDL_RenderPresent(renderer);
+        SDL_Delay(30);
     };
-
     while (checkRedo())
     {
         grid = std::vector<std::vector<int>>(9, std::vector<int>(9, 0));
@@ -187,6 +179,7 @@ void Sudoku::generateGrid()
         generateNotDiag(6, 9, 0, 3);
         renderLoad(4);
         generateNotDiag(6, 9, 3, 6);
+        first = false;
     }
     fprintf(stderr,"out\n");
 }
@@ -388,6 +381,7 @@ void Sudoku::grid3x3Cleanup(int i_min, int i_max, int j_min, int j_max)
 {
     int counter = 0, nb_max;
     nb_max = 9 - (rand() % 3) + 1;
+    counter = nb_max - 1;
     do
     {
         int x = rand() % (i_max - i_min + 1) + i_min;
@@ -578,6 +572,7 @@ void Sudoku::moveCursor()
             }
             case SDLK_SPACE:
             {
+                // Inserting number to cell 
                 if (boolean[i][j] != FIXED)
                 {
                     SDL_RenderCopy(renderer, cursor[1], nullptr, &cur_pos);
@@ -590,52 +585,28 @@ void Sudoku::moveCursor()
             }
             case SDLK_s:
             {
+                // Show solution when debugging
                 showGrid();
                 SDL_Delay(1000);
                 break;
             }
             case SDLK_a:
             {
-                bool pass = false;
-                SDL_Event new_event;
-                while(!pass)
+                // Confirming
+                if (endGame())
                 {
-                    SDL_Rect pos;
-                    pos.x = 14;
-                    pos.y = 40;
-                    SDL_RenderCopy(renderer, dialog, nullptr, &pos);
+                    SDL_RenderCopy(renderer, good, nullptr, nullptr);
                     SDL_RenderPresent(renderer);
-                    SDL_WaitEvent(&new_event);
-                    switch (new_event.type)
-                    {
-                    case SDL_KEYDOWN:
-                    {
-                        switch (new_event.key.keysym.sym)
-                        {
-                        case SDLK_y:
-                            if (endGame())
-                            {
-                                SDL_RenderCopy(renderer, good, nullptr, &pos);
-                                SDL_RenderPresent(renderer);
-                                SDL_Delay(2000);
-                                pass = true;
-                                finished = true;
-                                break;
-                            }
-                            if (!endGame())
-                            {
-                                SDL_RenderCopy(renderer, error, nullptr, &pos);
-                                SDL_RenderPresent(renderer);
-                                SDL_Delay(500);
-                                pass = true;
-                                break;
-                            }
-                        case SDLK_n:
-                            pass = true;
-                            break;
-                        }
-                    }
-                    }
+                    SDL_Delay(2000);
+                    finished = true;
+                    break;
+                }
+                else if (!endGame())
+                {
+                    SDL_RenderCopy(renderer, error, nullptr, nullptr);
+                    SDL_RenderPresent(renderer);
+                    SDL_Delay(500);
+                    break;
                 }
             }
             }
@@ -669,78 +640,87 @@ void Sudoku::insertNumber(int i, int j)
         {
             switch (event.key.keysym.sym)
             {
-            case SDLK_1:
-            {
-                grid_copy[i][j] = 1;
-                if (grid[i][j]==1)
-                    boolean[i][j]=FOUND;
-                fin = true;
-                break;
-            }
-            case SDLK_2:
-            {
-                grid_copy[i][j] = 2;
-                if (grid[i][j]==2)
-                    boolean[i][j]=FOUND;
-                fin = true;
-                break;
-            }
-            case SDLK_3:
-            {
-                grid_copy[i][j] = 3;
-                if (grid[i][j]==3)
-                    boolean[i][j]=FOUND;
-                fin = true;
-                break;
-            }
-            case SDLK_4:
-            {
-                grid_copy[i][j] = 4;
-                if (grid[i][j]==4)
-                    boolean[i][j]=FOUND;
-                fin = true;
-                break;
-            }
-            case SDLK_5:
-            {
-                grid_copy[i][j] = 5;
-                if (grid[i][j]==5)
-                    boolean[i][j]=FOUND;
-                fin = true;
-                break;
-            }
-            case SDLK_6:
-            {
-                grid_copy[i][j] = 6;
-                if (grid[i][j]==6)
-                    boolean[i][j]=FOUND;
-                fin = true;
-                break;
-            }
-            case SDLK_7:
-            {
-                grid_copy[i][j] = 7;
-                if (grid[i][j]==7)
-                    boolean[i][j]=FOUND;
-                fin = true;
-                break;
-            }
-            case SDLK_8:
-            {
-                grid_copy[i][j] = 8;
-                if (grid[i][j]==8)
-                    boolean[i][j]=FOUND;
-                fin = true;
-                break;
-            }
-            case SDLK_9:
-            {
-                grid_copy[i][j] = 9;
-                if (grid[i][j]==9)
-                    boolean[i][j]=FOUND;
-                fin = true;
-                break;
-            }
+                case SDLK_1:
+                case SDLK_KP_1:
+                {
+                    grid_copy[i][j] = 1;
+                    if (grid[i][j]==1)
+                        boolean[i][j]=FOUND;
+                    fin = true;
+                    break;
+                }
+                case SDLK_2:
+                case SDLK_KP_2:
+                {
+                    grid_copy[i][j] = 2;
+                    if (grid[i][j]==2)
+                        boolean[i][j]=FOUND;
+                    fin = true;
+                    break;
+                }
+                case SDLK_3:
+                case SDLK_KP_3:
+                {
+                    grid_copy[i][j] = 3;
+                    if (grid[i][j]==3)
+                        boolean[i][j]=FOUND;
+                    fin = true;
+                    break;
+                }
+                case SDLK_4:
+                case SDLK_KP_4:
+                {
+                    grid_copy[i][j] = 4;
+                    if (grid[i][j]==4)
+                        boolean[i][j]=FOUND;
+                    fin = true;
+                    break;
+                }
+                case SDLK_5:
+                case SDLK_KP_5:
+                {
+                    grid_copy[i][j] = 5;
+                    if (grid[i][j]==5)
+                        boolean[i][j]=FOUND;
+                    fin = true;
+                    break;
+                }
+                case SDLK_6:
+                case SDLK_KP_6:
+                {
+                    grid_copy[i][j] = 6;
+                    if (grid[i][j]==6)
+                        boolean[i][j]=FOUND;
+                    fin = true;
+                    break;
+                }
+                case SDLK_7:
+                case SDLK_KP_7:
+                {
+                    grid_copy[i][j] = 7;
+                    if (grid[i][j]==7)
+                        boolean[i][j]=FOUND;
+                    fin = true;
+                    break;
+                }
+                case SDLK_8:
+                case SDLK_KP_8:
+                {
+                    grid_copy[i][j] = 8;
+                    if (grid[i][j]==8)
+                        boolean[i][j]=FOUND;
+                    fin = true;
+                    break;
+                }
+                case SDLK_9:
+                case SDLK_KP_9:
+                {
+                    grid_copy[i][j] = 9;
+                    if (grid[i][j]==9)
+                        boolean[i][j]=FOUND;
+                    fin = true;
+                    break;
+                }
             }
         }
         }

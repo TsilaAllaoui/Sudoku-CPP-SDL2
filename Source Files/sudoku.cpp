@@ -521,6 +521,11 @@ void Sudoku::moveCursor()
         {
             switch (event.key.keysym.sym)
             {
+            case SDLK_ESCAPE:
+            {
+                this->~Sudoku();
+                exit(0);
+            }
             case SDLK_UP:
             {
                 if (cur_pos.y - S_SIZE > 0)
